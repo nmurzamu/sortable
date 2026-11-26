@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiverse Anime Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Kelly+Slab&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="cyber-mode">
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="logo-section">
+                <div style="font-size: 3rem; filter: drop-shadow(0 0 10px var(--accent))">🌌</div>
+                <h1>ANIME ARCHIVE</h1>
+                <span class="btn" onclick="toggleTheme()" style="font-size: 0.6rem;">🌓 ПЕРЕКЛЮЧИТЬ ЭПОХУ</span>
+            </div>
+
+            <div class="user-rank-card">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                    <span>РАНГ ДОСТУПА:</span>
+                    <span id="user-rank-name" style="color: var(--chakra-blue); font-weight: bold;">НОВИЧОК</span>
+                </div>
+                <div class="rank-progress"><div id="rank-bar" class="rank-fill"></div></div>
+                <div style="font-size: 0.6rem; margin-top: 5px; opacity: 0.6;">ИЗУЧЕНО ОБЪЕКТОВ: <span id="exp-count">0</span></div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="main-search" class="neon-input" placeholder="Поиск персонажа...">
+            </div>
+
+            <div class="filter-grid">
+                <button class="btn active" onclick="setCategory('Все')">ВСЕ</button>
+                <button class="btn" onclick="setCategory('Наруто')">НАРУТО</button>
+                <button class="btn" onclick="setCategory('Титаны')">АТАКА ТИТАНОВ</button>
+                <button class="btn" onclick="setCategory('Гуль')">ТОКИЙСКИЙ ГУЛЬ</button>
+                <button class="btn" onclick="setCategory('Тетрадь')">ТЕТРАДЬ СМЕРТИ</button>
+                <button class="btn" onclick="setCategory('Fav')">⭐ ЛЮБИМЫЕ</button>
+            </div>
+
+            <button class="btn add-hero-btn" onclick="openAddModal()" style="margin-top: 10px; border-color: #00ff88; color: #00ff88;">+ ДОБАВИТЬ ГЕРОЯ</button>
+
+            <div class="music-widget">
+                <div style="font-size: 0.7rem; margin-bottom: 8px; font-family: 'JetBrains Mono';">
+                    <span class="blink">●</span> AUDIO_STREAM: LOFI_RADIO
+                </div>
+                <audio id="bg-audio" controls style="width: 100%; height: 30px;">
+                    <source src="https://stream.zeno.fm/0r0xa792kwzuv" type="audio/mpeg">
+                </audio>
+            </div>
+        </aside>
+
+        <main class="viewport">
+            <div class="stats-overview">
+                <div class="stat-mini-card">
+                    <div style="font-size: 0.7rem; opacity: 0.7;">ОБЪЕКТОВ В БАЗЕ</div>
+                    <div id="total-count" style="font-size: 1.5rem; font-weight: 800;">0</div>
+                </div>
+                <div class="stat-mini-card" style="border-color: var(--chakra-blue);">
+                    <div style="font-size: 0.7rem; opacity: 0.7;">СТАТУС СИСТЕМЫ</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--chakra-blue);">ONLINE</div>
+                </div>
+            </div>
+
+            <div class="data-container">
+                <table id="shinobi-table">
+                    <thead>
+                        <tr>
+                            <th width="50">⭐</th>
+                            <th>ПЕРСОНАЖ</th>
+                            <th>СТИХИИ / МЕТКИ</th>
+                            <th>РАНГ / ТИП</th>
+                            <th>ПРОИСХОЖДЕНИЕ</th>
+                            <th>АНАЛИЗ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-char" class="modal">
+        <div class="modal-content">
+            <div class="modal-left">
+                <img id="m-img" src="" class="char-img">
+                <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 5px;">
+                    <div id="m-elements"></div>
+                </div>
+            </div>
+            <div class="modal-right">
+                <h2 id="m-name"></h2>
+                <p id="m-village"></p>
+                <div class="stats-box">
+                    <h3>БОЕВЫЕ ХАРАКТЕРИСТИКИ</h3>
+                    <div id="m-stats-bars"></div>
+                </div>
+                <div class="jutsu-box">
+                    <h3>ОСОБЫЕ НАВЫКИ</h3>
+                    <div id="m-jutsus"></div>
+                </div>
+                <button class="btn" onclick="closeModal()" style="margin-top: 30px; width: 100%;">ЗАКРЫТЬ АРХИВ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-add" class="modal">
+        <div class="modal-content" style="max-width: 500px; height: auto; padding: 30px; flex-direction: column;">
+            <h2 style="color: var(--accent);">ДОБАВИТЬ НОВЫЙ ОБЪЕКТ</h2>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" id="add-name" class="neon-input" placeholder="Имя героя">
+                <select id="add-universe" class="neon-input">
+                    <option value="Наруто">Наруто</option>
+                    <option value="Атака Титанов">Атака Титанов</option>
+                    <option value="Токийский Гуль">Токийский Гуль</option>
+                    <option value="Тетрадь Смерти">Тетрадь Смерти</option>
+                </select>
+                <input type="text" id="add-origin" class="neon-input" placeholder="Происхождение (напр. Коноха)">
+                <input type="text" id="add-rank" class="neon-input" placeholder="Ранг (напр. Джонин)">
+                <input type="text" id="add-img" class="neon-input" placeholder="Ссылка на фото (URL)">
+                <input type="text" id="add-jutsus" class="neon-input" placeholder="Навыки (через запятую)">
+                <div style="font-size: 0.7rem; color: var(--chakra-blue);">Статы (0-100): Атака, Защита, Скорость</div>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" id="add-s1" class="neon-input" placeholder="Атк">
+                    <input type="number" id="add-s2" class="neon-input" placeholder="Защ">
+                    <input type="number" id="add-s3" class="neon-input" placeholder="Скр">
+                </div>
+                <button class="btn" onclick="addNewHero()" style="background: var(--accent); color: #000; margin-top: 10px;">СОХРАНИТЬ В БАЗУ</button>
+                <button class="btn" onclick="closeAddModal()">ОТМЕНА</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-compare" class="modal">
+        <div class="modal-content" style="flex-direction: column; height: auto; padding: 40px; max-width: 800px;">
+            <h2 style="text-align: center; font-family: 'Kelly Slab'; color: var(--accent);">БОЕВАЯ СИМУЛЯЦИЯ</h2>
+            <div id="compare-grid" style="display: flex; gap: 40px; justify-content: center; align-items: center;"></div>
+            <button class="btn" onclick="closeCompare()" style="margin-top: 30px;">ЗАВЕРШИТЬ АНАЛИЗ</button>
+        </div>
+    </div>
+
+    <div id="compare-trigger" class="compare-drawer" onclick="runComparison()">
+        ⚖️ СРАВНИТЬ ВЫБРАННЫХ (<span id="comp-n">0</span>)
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
